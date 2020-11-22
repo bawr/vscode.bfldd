@@ -29,17 +29,19 @@ export class ConfigurationService {
     }
 
     public getSupportedLanguages() {
-        const supportedLanguages: string[] = [];
+        const supportedLanguages: Set<string> = new Set();
         const configuration = this.loadConfiguration();
         for (let prop in configuration) {
-            if (prop.startsWith("[") && prop.endsWith("]")) {
-                const languageName = prop.substr(1, prop.length - 2);
-                if (!configuration[prop].disableFolding) {
-                    supportedLanguages.push(languageName);
-                }
+            const match = prop.match(/^\[([^.]+)(\..+)?\]$/);
+            if (!match) {
+                continue;
             }
+            if (configuration[prop].disableFolding) {
+                continue;
+            }
+            supportedLanguages.add(match[1]);
         }
-        return supportedLanguages;
+        return Array.from(supportedLanguages);
     }
 
 
@@ -55,39 +57,24 @@ export class ConfigurationService {
         return config;
     }
 
-    public getConfigurationForLanguage(languageId: string): config.ILanguageConfiguration | null {
-        let config = this.loadConfiguration();
-        const currentLanguageConfig = config["[" + languageId + "]"];
+    public getConfigurationForDocument(document: vscode.TextDocument, config?: config.IConfiguration): config.ILanguageConfiguration | null {
+        if (config === undefined) {
+            config = this.loadConfiguration();
+        }
+        let lookupId = document.languageId;
+        if (lookupId === "plaintext") {
+            const fileName = document.fileName;
+            const extIndex = fileName.search(/[.][^.]{1,8}$/)
+            if (extIndex !== -1) {
+                // "/path/to/foo.bawr.baz" -> "plaintext.baz"
+                lookupId += fileName.substr(extIndex);
+            }
+        }
+        lookupId = `[${lookupId}]`;
+        const currentLanguageConfig = config[lookupId];
         if ((typeof currentLanguageConfig === "undefined") || !currentLanguageConfig) {
             return null;
         }
-        return currentLanguageConfig;
-    }
-
-    public getConfigurationForCurrentLanguage(languageId: string) {
-        let config = this.loadConfiguration();
-        if (vscode.window.activeTextEditor === null) { return null; }
-        /* #region Get the configuration for the current language */
-
-        if (!languageId) {
-            var ate = vscode.window.activeTextEditor;
-            if (!ate) { return null; }
-            languageId = ate.document.languageId;
-        }
-
-        const currentLanguageConfig = config["[" + languageId + "]"];
-        if (
-            typeof currentLanguageConfig === "undefined" ||
-            !currentLanguageConfig
-        ) {
-            vscode.window.showInformationMessage(
-                "Maptz Region Folding. No region folding available for language '" +
-                languageId +
-                "'. Check that you have the language extension installed for these files."
-            );
-            return null;
-        }
-        /* #endregion */
         return currentLanguageConfig;
     }
 }

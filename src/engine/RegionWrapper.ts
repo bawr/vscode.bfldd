@@ -22,7 +22,7 @@ export class RegionWrapperService {
         let document = ate.document;
         if (!document) { return; }
 
-        let currentLanguageConfig = this._configService.getConfigurationForCurrentLanguage(document.languageId);
+        let currentLanguageConfig = this._configService.getConfigurationForDocument(document);
         if (!currentLanguageConfig) { return; }
         
         /* #region Check if there is anything selected. */

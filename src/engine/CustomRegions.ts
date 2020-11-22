@@ -94,9 +94,7 @@ export class RegionProvider {
     }
 
     public getRegions(document: vscode.TextDocument): { completedRegions: CustomRegion[], errors: string[] } {
-        const languageId = document.languageId;
-
-        const currentLanguageConfig = this._configurationService.getConfigurationForLanguage(languageId);
+        const currentLanguageConfig = this._configurationService.getConfigurationForDocument(document);
         if (!currentLanguageConfig) {
             return {
                 completedRegions: [],
