@@ -1,6 +1,7 @@
 export interface ILanguageConfiguration extends IFoldConfiguration {
   defaultFoldStartRegex?: string;
   disableFolding?: boolean;
+  showLastLine?: boolean;
 
   //Latest version
   foldDefinitions?: IFoldConfiguration[];
