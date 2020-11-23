@@ -1,7 +1,6 @@
 export interface ILanguageConfiguration extends IFoldConfiguration {
   defaultFoldStartRegex?: string;
   disableFolding?: boolean;
-  showLastLine?: boolean;
 
   //Latest version
   foldDefinitions?: IFoldConfiguration[];
@@ -14,6 +13,7 @@ export interface IFoldConfiguration{
   foldStart: string;
   foldStartRegex: string;
   isFoldedByDefault?: boolean;
+  showLastLine?: boolean;
 }
 
 export interface IConfiguration {
@@ -27,4 +27,3 @@ export interface IOptionsConfiguration{
 export let DefaultOptionsConfiguration : IOptionsConfiguration = {
   collapseDefaultRegionsOnOpen: true
 };
-

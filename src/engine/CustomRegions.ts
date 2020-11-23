@@ -148,7 +148,8 @@ export class RegionProvider {
                         );
                         continue;
                     }
-                    var endIndex = currentLanguageConfig.showLastLine ? lineIndex - 1 : lineIndex;
+                    var showLast = foldDefinition.showLastLine ?? currentLanguageConfig.showLastLine; 
+                    var endIndex = showLast ? lineIndex - 1 : lineIndex;
                     var endTag = RegionTag.FromRegex(endMatch, RegionTagType.End, endIndex);
                     var lastStartedRegion = startedRegions[startedRegions.length - 1];
                     var finishedRegion = new CustomRegion(lastStartedRegion.startRegionTag, endTag);
